@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.github.yasevich.menugen.feature.menu.MenuScreen
+import com.github.yasevich.menugen.navigation.MenuGenNavHost
 import com.github.yasevich.menugen.ui.theme.MenuGenTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MenuGenTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MenuScreen(modifier = Modifier.padding(innerPadding))
+                    MenuGenNavHost(modifier = Modifier.padding(innerPadding))
                 }
             }
         }

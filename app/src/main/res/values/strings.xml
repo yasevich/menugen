@@ -1,3 +1,7 @@
 <resources>
+
     <string name="app_name">MenuGen</string>
+
+    <string name="feature_upload_from_gallery_cta">Pick from gallery</string>
+
 </resources>
