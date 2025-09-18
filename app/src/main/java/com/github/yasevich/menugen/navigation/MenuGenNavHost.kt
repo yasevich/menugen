@@ -20,8 +20,8 @@ fun MenuGenNavHost(
     ) {
         composable<UploadDestination> {
             UploadScreen(
-                navigateToMenu = {
-                    navController.navigate(route = MenuDestination)
+                navigateToMenu = { uri ->
+                    navController.navigate(route = MenuDestination(uri))
                 }
             )
         }

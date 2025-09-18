@@ -1,6 +1,7 @@
 package com.github.yasevich.menugen.feature.menu
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -9,17 +10,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.github.yasevich.menugen.feature.menu.ui.model.MenuGroup
-import com.github.yasevich.menugen.feature.menu.ui.model.MenuItem
-import com.github.yasevich.menugen.feature.menu.ui.model.MenuItemModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.github.yasevich.menugen.feature.menu.ui.model.GroupItem
+import com.github.yasevich.menugen.feature.menu.ui.model.GroupModel
 import com.github.yasevich.menugen.ui.theme.Dimen
 import com.github.yasevich.menugen.ui.theme.MenuGenTheme
 
@@ -28,12 +33,43 @@ fun MenuScreen(
     modifier: Modifier = Modifier,
     viewModel: MenuViewModel = hiltViewModel(),
 ) {
-    MenuContent(viewModel.items, modifier.fillMaxSize())
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    when (val state = uiState) {
+        is MenuViewModel.UiState.Failure -> MenuFailure(state, modifier)
+        is MenuViewModel.UiState.Loading -> MenuLoading(modifier)
+        is MenuViewModel.UiState.Success -> MenuContent(state, modifier)
+    }
+}
+
+@Composable
+private fun MenuFailure(
+    state: MenuViewModel.UiState.Failure,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = state.message,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
+@Composable
+private fun MenuLoading(
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
+    }
 }
 
 @Composable
 private fun MenuContent(
-    items: List<MenuItemModel>,
+    state: MenuViewModel.UiState.Success,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -41,10 +77,10 @@ private fun MenuContent(
         contentPadding = PaddingValues(vertical = Dimen.smallPadding),
         verticalArrangement = Arrangement.spacedBy(space = Dimen.smallPadding),
     ) {
-        items(items, { it.key }) { item ->
+        items(items = state.models, key = { it.key }) { item ->
             when (item) {
-                is MenuGroup -> MenuGroupContent(group = item)
-                is MenuItem -> MenuItemContent(item = item)
+                is GroupModel -> MenuGroupContent(group = item)
+                is GroupItem -> MenuItemContent(item = item)
             }
         }
     }
@@ -52,7 +88,7 @@ private fun MenuContent(
 
 @Composable
 private fun MenuGroupContent(
-    group: MenuGroup,
+    group: GroupModel,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -75,7 +111,7 @@ private fun MenuGroupContent(
 
 @Composable
 private fun MenuItemContent(
-    item: MenuItem,
+    item: GroupItem,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier.fillMaxWidth()) {
@@ -87,11 +123,13 @@ private fun MenuItemContent(
                     text = item.name,
                     style = MaterialTheme.typography.titleMedium,
                 )
-                Text(
-                    text = item.description,
-                )
+                item.description?.let { description ->
+                    Text(text = description)
+                }
             }
-            Text(text = item.price, style = MaterialTheme.typography.titleMedium)
+            item.price?.let { price ->
+                Text(text = price, style = MaterialTheme.typography.titleMedium)
+            }
         }
     }
 }

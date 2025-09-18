@@ -1,10 +1,8 @@
 package com.github.yasevich.menugen.feature.menu.ui.model
 
-class MenuGroup(
+class GroupModel(
     val name: String,
     val description: String? = null,
 ) : MenuItemModel {
-
-    override val key: String
-        get() = name
+    override val key: String = "group/$name"
 }

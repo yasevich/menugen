@@ -18,14 +18,14 @@ import com.github.yasevich.menugen.ui.theme.MenuGenTheme
 
 @Composable
 fun UploadScreen(
-    navigateToMenu: () -> Unit,
+    navigateToMenu: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: UploadViewModel = hiltViewModel(),
 ) {
     val pickVisualMedia = rememberLauncherForActivityResult(contract = PickVisualMedia()) { uri ->
         if (uri != null) {
-            viewModel.upload()
-            navigateToMenu()
+            viewModel.upload(uri)
+            navigateToMenu(uri.toString())
         }
     }
 

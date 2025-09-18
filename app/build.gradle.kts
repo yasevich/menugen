@@ -15,7 +15,7 @@ android {
 
     defaultConfig {
         applicationId = "com.github.yasevich.menugen"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -47,6 +47,12 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes.add("META-INF/DEPENDENCIES")
+        }
+    }
 }
 
 dependencies {
@@ -65,6 +71,10 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.android.compiler)
+
+    implementation(libs.kotlin.serialization.json)
+
+    implementation(libs.openai.java)
 
     testImplementation(libs.junit)
 

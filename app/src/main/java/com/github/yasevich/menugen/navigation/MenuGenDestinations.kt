@@ -3,7 +3,9 @@ package com.github.yasevich.menugen.navigation
 import kotlinx.serialization.Serializable
 
 @Serializable
-object MenuDestination
+class MenuDestination(
+    val uri: String,
+)
 
 @Serializable
 object UploadDestination
